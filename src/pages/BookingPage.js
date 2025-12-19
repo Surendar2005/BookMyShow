@@ -31,7 +31,6 @@ const BookingPage = ({ user }) => {
     walletNumber: ''
   });
 
-  // Generate seat layout (10 rows, 12 seats per row)
   const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   const seatsPerRow = 12;
   const [seatLayout] = useState(() => {
@@ -41,7 +40,7 @@ const BookingPage = ({ user }) => {
         id: `${row}${index + 1}`,
         row: row,
         number: index + 1,
-        available: Math.random() > 0.3, // 70% seats available
+        available: Math.random() > 0.3,
         type: index < 4 || index > 7 ? 'regular' : 'premium'
       }));
     });
@@ -68,7 +67,6 @@ const BookingPage = ({ user }) => {
   }, [movieId]);
 
   useEffect(() => {
-    // Pre-fill booking details from signed-in user if available
     if (user) {
       setBookingDetails((prev) => ({
         ...prev,
@@ -177,7 +175,6 @@ const BookingPage = ({ user }) => {
 
     const total = calculateTotal();
 
-    // Prepare payment details to send to backend
     const paymentData = {};
     if (paymentMethod === 'card') {
       paymentData.cardNumber = paymentDetails.cardNumber;
@@ -190,7 +187,7 @@ const BookingPage = ({ user }) => {
 
     createBooking({
       movieId: movie.id,
-      movieTitle: movie.title, // Send movieTitle to backend
+      movieTitle: movie.title,
       showtime: selectedShowtime,
       seats: selectedSeats,
       total,

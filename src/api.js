@@ -1,8 +1,5 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
-// Note: Movies are now in frontend (src/data/movies.js)
-// Only booking API calls are made to backend
-
 export async function createBooking(payload) {
   const res = await fetch(`${API_BASE_URL}/bookings`, {
     method: 'POST',

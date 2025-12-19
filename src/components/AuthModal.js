@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './AuthModal.css';
 
 const AuthModal = ({ isOpen, onClose, onSignIn }) => {
-  const [mode, setMode] = useState('email'); // 'email' | 'phone'
+  const [mode, setMode] = useState('email');
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -31,7 +31,6 @@ const AuthModal = ({ isOpen, onClose, onSignIn }) => {
       return;
     }
 
-    // Simulate successful sign-in
     onSignIn({
       name: form.name.trim(),
       email: form.email.trim(),

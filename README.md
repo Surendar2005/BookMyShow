@@ -38,16 +38,42 @@ cd server
 npm install
 ```
 
-2. **Install and Start MongoDB:**
-   - **Option 1: Local MongoDB**
-     - Install MongoDB from https://www.mongodb.com/try/download/community
-     - Start MongoDB service (usually runs automatically on Windows)
-     - Default connection: `mongodb://127.0.0.1:27017/bookmyshow`
+2. **Set up MongoDB Atlas (Cloud Database):**
    
-   - **Option 2: MongoDB Atlas (Cloud)**
-     - Create a free account at https://www.mongodb.com/cloud/atlas
-     - Create a cluster and get your connection string
-     - Set environment variable: `MONGO_URI=your_atlas_connection_string`
+   - **Step 1: Create MongoDB Atlas Account**
+     - Go to https://www.mongodb.com/cloud/atlas/register
+     - Sign up for a free account
+     - Create a free cluster (M0 - Free tier)
+   
+   - **Step 2: Get Connection String**
+     - In Atlas dashboard, click **"Connect"** on your cluster
+     - Choose **"Connect your application"**
+     - Copy the connection string (looks like):
+       ```
+       mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+       ```
+     - Replace `<username>` and `<password>` with your database user credentials
+     - Add database name: `/bookmyshow` at the end
+   
+   - **Step 3: Configure Environment Variables**
+     - Copy `server/.env.example` to `server/.env`:
+       ```bash
+       cd server
+       copy .env.example .env
+       ```
+     - Open `server/.env` and replace the `MONGO_URI` with your actual Atlas connection string:
+       ```
+       MONGO_URI=mongodb+srv://your-username:your-password@cluster0.xxxxx.mongodb.net/bookmyshow?retryWrites=true&w=majority
+       ```
+   
+   - **Step 4: Set Database Access**
+     - In Atlas, go to **"Database Access"** → **"Add New Database User"**
+     - Create a user with username and password (remember these!)
+     - Set user privileges to **"Read and write to any database"**
+   
+   - **Step 5: Set Network Access**
+     - Go to **"Network Access"** → **"Add IP Address"**
+     - Click **"Allow Access from Anywhere"** (for development) or add your IP address
 
 ## Running the Application
 
@@ -59,7 +85,7 @@ cd server
 npm start
 ```
 
-The backend will start on `http://localhost:5000` and connect to MongoDB. On first run, it will automatically seed the database with sample movies.
+The backend will start on `http://localhost:5000` and connect to MongoDB Atlas. Make sure you have configured your `.env` file with the MongoDB Atlas connection string.
 
 ### 2. Start the Frontend
 

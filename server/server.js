@@ -1,16 +1,15 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-// Try 127.0.0.1 if localhost doesn't work on Windows
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/bookmyshow';
+const MONGO_URI = process.env.MONGO_URI;
 
 app.use(cors());
 app.use(express.json());
 
-// Booking Schema - Only bookings are stored in MongoDB
 const bookingSchema = new mongoose.Schema(
   {
     movieId: { type: Number, required: true },
@@ -25,11 +24,10 @@ const bookingSchema = new mongoose.Schema(
     },
     paymentMethod: { type: String, required: true, enum: ['card', 'upi', 'wallet'] },
     paymentDetails: {
-      // Store masked/safe payment info only (not full card numbers for security)
-      last4Digits: String, // For card: last 4 digits only
-      upiId: String, // For UPI
-      walletProvider: String, // For wallet
-      walletNumber: String, // Masked wallet number
+      last4Digits: String,
+      upiId: String,
+      walletProvider: String,
+      walletNumber: String,
     },
     bookingStatus: { type: String, default: 'confirmed', enum: ['confirmed', 'cancelled'] },
   },
@@ -38,12 +36,10 @@ const bookingSchema = new mongoose.Schema(
 
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// Routes - Only booking endpoints (movies are in frontend)
 
 app.post('/api/bookings', async (req, res) => {
   const { movieId, showtime, seats, total, user, paymentMethod, paymentDetails } = req.body;
 
-  // Validate required fields
   if (!movieId || !showtime || !seats || !Array.isArray(seats) || seats.length === 0) {
     return res.status(400).json({ message: 'Invalid booking data: missing required fields' });
   }
@@ -57,18 +53,14 @@ app.post('/api/bookings', async (req, res) => {
   }
 
   try {
-    // Note: Movie data is in frontend, we just need movieId and movieTitle from request
-    // The frontend should send movieTitle along with movieId
     const { movieTitle } = req.body;
     
     if (!movieTitle) {
       return res.status(400).json({ message: 'Movie title is required' });
     }
 
-    // Prepare payment details (store only safe/masked information)
     const safePaymentDetails = {};
     if (paymentMethod === 'card' && paymentDetails?.cardNumber) {
-      // Store only last 4 digits for security
       const cardNumber = paymentDetails.cardNumber.replace(/\s/g, '');
       safePaymentDetails.last4Digits = cardNumber.slice(-4);
     } else if (paymentMethod === 'upi' && paymentDetails?.upiId) {
@@ -78,7 +70,6 @@ app.post('/api/bookings', async (req, res) => {
         safePaymentDetails.walletProvider = paymentDetails.walletProvider;
       }
       if (paymentDetails?.walletNumber) {
-        // Mask wallet number (show only last 4 digits)
         const walletNum = paymentDetails.walletNumber.replace(/\s/g, '');
         safePaymentDetails.walletNumber = walletNum.length > 4 
           ? '****' + walletNum.slice(-4) 
@@ -145,14 +136,30 @@ app.get('/', (req, res) => {
 
 async function start() {
   try {
+    if (!MONGO_URI) {
+      console.error('Error: MongoDB Atlas connection string not configured!');
+      console.error('Please create server/.env file with your MONGO_URI');
+      console.error('');
+      console.error('Example .env file content:');
+      console.error('MONGO_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/bookmyshow?retryWrites=true&w=majority');
+      console.error('');
+      console.error('Important: Add /bookmyshow before the ? in your connection string!');
+      process.exit(1);
+    }
+    
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB Atlas');
     console.log('Backend ready - Only booking endpoints available (movies are in frontend)');
     app.listen(PORT, () => {
       console.log(`Server listening on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error('Failed to start server:', err);
+    console.error('Failed to start server:', err.message);
+    if (err.message.includes('authentication failed')) {
+      console.error('Tip: Check your MongoDB Atlas username and password in .env file');
+    } else if (err.message.includes('ENOTFOUND') || err.message.includes('getaddrinfo')) {
+      console.error('Tip: Check your MongoDB Atlas cluster URL in .env file');
+    }
     process.exit(1);
   }
 }
