@@ -134,35 +134,64 @@ app.get('/', (req, res) => {
   res.send('BookMyShow backend is running - Booking API only (movies are in frontend)');
 });
 
-async function start() {
+// Connect to MongoDB
+async function connectDB() {
   try {
     if (!MONGO_URI) {
-      console.error('Error: MongoDB Atlas connection string not configured!');
-      console.error('Please create server/.env file with your MONGO_URI');
-      console.error('');
-      console.error('Example .env file content:');
-      console.error('MONGO_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/bookmyshow?retryWrites=true&w=majority');
-      console.error('');
-      console.error('Important: Add /bookmyshow before the ? in your connection string!');
-      process.exit(1);
+      console.error('❌ Error: MongoDB Atlas connection string not configured!');
+      if (process.env.VERCEL) {
+        console.error('Please set MONGO_URI environment variable in Vercel dashboard');
+      } else {
+        console.error('Please create server/.env file with your MONGO_URI');
+      }
+      return;
     }
     
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB Atlas');
-    console.log('Backend ready - Only booking endpoints available (movies are in frontend)');
-    app.listen(PORT, () => {
-      console.log(`Server listening on http://localhost:${PORT}`);
-    });
+    console.log('✅ Connected to MongoDB Atlas');
   } catch (err) {
-    console.error('Failed to start server:', err.message);
-    if (err.message.includes('authentication failed')) {
-      console.error('Tip: Check your MongoDB Atlas username and password in .env file');
-    } else if (err.message.includes('ENOTFOUND') || err.message.includes('getaddrinfo')) {
-      console.error('Tip: Check your MongoDB Atlas cluster URL in .env file');
-    }
-    process.exit(1);
+    console.error('❌ Failed to connect to MongoDB:', err.message);
   }
 }
 
-start();
+// Initialize database connection
+connectDB();
+
+// Start server only if not in Vercel serverless environment
+if (process.env.VERCEL !== '1') {
+  async function start() {
+    try {
+      if (!MONGO_URI) {
+        console.error('❌ Error: MongoDB Atlas connection string not configured!');
+        console.error('Please create server/.env file with your MONGO_URI');
+        console.error('');
+        console.error('Example .env file content:');
+        console.error('MONGO_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/bookmyshow?retryWrites=true&w=majority');
+        console.error('');
+        console.error('⚠️  Important: Add /bookmyshow before the ? in your connection string!');
+        process.exit(1);
+      }
+      
+      await mongoose.connect(MONGO_URI);
+      console.log('✅ Connected to MongoDB Atlas');
+      console.log('📦 Backend ready - Only booking endpoints available (movies are in frontend)');
+      app.listen(PORT, () => {
+        console.log(`🚀 Server listening on http://localhost:${PORT}`);
+      });
+    } catch (err) {
+      console.error('❌ Failed to start server:', err.message);
+      if (err.message.includes('authentication failed')) {
+        console.error('💡 Tip: Check your MongoDB Atlas username and password in .env file');
+      } else if (err.message.includes('ENOTFOUND') || err.message.includes('getaddrinfo')) {
+        console.error('💡 Tip: Check your MongoDB Atlas cluster URL in .env file');
+      }
+      process.exit(1);
+    }
+  }
+  
+  start();
+}
+
+// Export for Vercel serverless
+module.exports = app;
 
