@@ -1,0 +1,129 @@
+.footer {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: #d3d3d3;
+  margin-top: auto;
+  width: 100%;
+}
+
+.footer .footer-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 50px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.footer .footer-content .footer-section {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer .footer-content h1,
+.footer .footer-content h2 {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.footer .footer-content .about .logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #f84464;
+}
+
+.footer .footer-content .about p {
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.footer .footer-content .links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer .footer-content .links ul li {
+  margin-bottom: 12px;
+}
+
+.footer .footer-content .links ul a {
+  color: #d3d3d3;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: inline-block;
+}
+
+.footer .footer-content .links ul a:hover {
+  color: #f84464;
+  transform: translateX(5px);
+}
+
+.footer .footer-content .contact-form .contact-input {
+  background: rgba(255, 255, 255, 0.1);
+  color: #d3d3d3;
+  margin-bottom: 15px;
+  line-height: 1.5rem;
+  padding: 12px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.footer .footer-content .contact-form .contact-input::placeholder {
+  color: #999;
+}
+
+.footer .footer-content .contact-form .contact-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #f84464;
+}
+
+.footer .footer-content .contact-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.footer .footer-content .contact-form .btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.footer .footer-content .contact-form .btn-primary {
+  background: #f84464;
+  color: white;
+}
+
+.footer .footer-content .contact-form .btn-primary:hover {
+  background: #e63950;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(248, 68, 100, 0.3);
+}
+
+.footer .footer-bottom {
+  background: rgba(0, 0, 0, 0.3);
+  color: #999;
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .footer .footer-content {
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+  
+  .footer .footer-content .footer-section {
+    min-width: 100%;
+  }
+}
